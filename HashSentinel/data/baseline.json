@@ -1,0 +1,14 @@
+{
+  "folder": "C:\\Users\\ravik\\Downloads\\hashsentinel\\hashsentinel\\workspace",
+  "algo": "sha1",
+  "created": 1794281379.86348,
+  "ignore": [],
+  "files": {
+    "intellmeet-workspace-report.txt": {
+      "hash": "943dccad63561e79fb925c55800e65cc22d62b08",
+      "size": 154,
+      "mtime": 1794281377.9288654
+    }
+  },
+  "sig": "35f3d3b68e6072999faa76801b52672b16cd3aaaf55f3c4b7eb6b0709e0e65df"
+}

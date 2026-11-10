@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HASHSENTINEL: file integrity checker</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 7v8c0 7.5 5 13 12 15 7-2 12-7.5 12-15V7L16 2Z' fill='%230f5c7a'/%3E%3Cpath d='M13 10l-1.5 12M19.5 10 18 22M9.5 14.5h13M9 18.5h13' stroke='white' stroke-width='1.8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Source+Code+Pro:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/theme.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 4 7v8c0 7.5 5 13 12 15 7-2 12-7.5 12-15V7L16 2Z" fill="var(--accent)"/><path d="M13 10l-1.5 12M19.5 10 18 22M9.5 14.5h13M9 18.5h13" stroke="var(--accent-ink)" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+      <div>
+        <h1>HASHSENTINEL</h1>
+        <p>Fingerprint your files, then re-scan to see exactly what changed. Everything runs on this computer.</p>
+      </div>
+    </div>
+    <label class="inline themepick">Theme
+      <select id="theme">
+        <option value="system">System</option><option value="light">Light</option>
+        <option value="dark">Dark</option><option value="midnight">Midnight</option>
+      </select>
+    </label>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main>
+    <section class="panel" aria-labelledby="h-add">
+      <h2 id="h-add">1. Add files from your computer</h2>
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="Drop files or folders here, or press Enter to choose files">
+        <strong>Drop files or folders here</strong>
+        <span class="muted">or</span>
+        <div class="row wrap">
+          <button id="pickFiles" type="button">Choose files</button>
+          <button id="pickFolder" type="button">Choose a folder</button>
+        </div>
+        <input id="fileInput" type="file" multiple hidden>
+        <input id="folderInput" type="file" webkitdirectory hidden>
+      </div>
+      <p class="muted">Files are copied into a <code>workspace</code> folder beside the server. Your originals are never changed.
+        To test change detection, edit a file on your computer and add it again: the same name replaces the copy.</p>
+      <div class="row between">
+        <span id="wsSummary" class="muted">No files added yet.</span>
+        <div class="row">
+          <button id="wsBaseline" class="primary" disabled>Create baseline from these files</button>
+          <button id="wsClear" class="quiet" disabled>Remove all</button>
+        </div>
+      </div>
+      <ul id="wsList" class="wslist" hidden></ul>
+    </section>
+
+    <section class="panel" aria-labelledby="h-base">
+      <h2 id="h-base">Or protect any folder on this computer</h2>
+      <form id="baseForm" class="row">
+        <label class="grow">Folder path
+          <input id="folder" type="text" placeholder="C:\Users\you\Documents  or  /home/you/Documents" autocomplete="off">
+        </label>
+        <label>Hash algorithm
+          <select id="algo">
+            <option value="sha256">SHA-256</option><option value="sha512">SHA-512</option>
+            <option value="sha1">SHA-1</option><option value="md5">MD5</option>
+          </select>
+        </label>
+        <label class="grow">Ignore patterns
+          <input id="ignore" type="text" placeholder="*.log, *.tmp, cache/*" autocomplete="off">
+        </label>
+        <button id="baseBtn" class="primary" type="submit">Create baseline</button>
+      </form>
+      <p class="muted">Leave the folder path empty to use the files you added above.</p>
+      <p id="baseInfo" class="muted">No baseline yet.</p>
+
+      <details class="demo">
+        <summary>Try it on a demo folder</summary>
+        <p class="muted">Each button changes the demo folder on disk. Create it, make a baseline, change things, then scan.</p>
+        <div class="row wrap">
+          <button data-demo="reset">Create demo folder</button>
+          <button data-demo="edit">Edit a file</button>
+          <button data-demo="add">Add a file</button>
+          <button data-demo="delete">Delete a file</button>
+          <button data-demo="move">Rename a file</button>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel" aria-labelledby="h-scan">
+      <div class="row between">
+        <h2 id="h-scan">2. Scan and compare</h2>
+        <div class="row wrap">
+          <button id="scanBtn" class="primary" disabled>Scan now</button>
+          <button id="acceptBtn" disabled title="Make the current state the new baseline">Accept changes</button>
+          <label class="inline">Auto-scan
+            <select id="auto">
+              <option value="0">Off</option><option value="10">Every 10 s</option>
+              <option value="30">Every 30 s</option><option value="60">Every minute</option>
+            </select>
+          </label>
+          <button id="jsonBtn" disabled>Export JSON</button>
+          <button id="csvBtn" disabled>Export CSV</button>
+        </div>
+      </div>
+      <p id="scanBase" class="muted">No baseline yet. Create one above.</p>
+      <p id="status" class="status" role="status" aria-live="polite">Add files or choose a folder to begin.</p>
+
+      <div id="result" hidden>
+        <div id="verdict" class="verdict"></div>
+        <div id="tiles" class="tiles"></div>
+        <div class="row between filters">
+          <div id="chips" role="group" aria-label="Filter changes"></div>
+          <input id="search" type="search" placeholder="Filter by file name" aria-label="Filter by file name">
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Status</th><th>File</th><th>What changed</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-hist">
+      <div class="row between">
+        <h2 id="h-hist">Scan history</h2>
+        <button id="resetBtn" class="quiet">Clear baseline and history</button>
+      </div>
+      <ul id="history" class="history"><li class="muted">No scans yet.</li></ul>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
