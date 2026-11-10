@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PassSentinel – Intelligent Password Strength Analyzer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>PassSentinel</h1>
+    <h2 class="tagline">Intelligent Password Strength Analyzer</h2>
+    <p>Type a password and see its strength, its estimated crack time, and which parts attackers guess first. Analysis runs on a Python server on your machine. Passwords are never stored.</p>
+  </div>
+  <button id="theme" type="button" aria-label="Switch colour theme">Theme</button>
+</header>
+
+<div class="grid">
+  <div>
+    <section class="panel" aria-labelledby="t1">
+      <h2 id="t1">Test a password</h2>
+      <div class="field">
+        <input id="pw" type="password" autocomplete="off" spellcheck="false" placeholder="Type or paste a password" aria-label="Password to test">
+        <button id="eye" type="button" aria-pressed="false">Show</button>
+        <button id="chk" type="button" class="primary">Check</button>
+      </div>
+      <label class="opt"><input type="checkbox" id="live"> Show strength live as I type (off = only when I click Check)</label>
+      <div class="meter" id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="verdict" aria-live="polite"><b id="label">Waiting for input</b><span id="sub">Start typing to see a rating</span></div>
+      <div id="breach" class="note" aria-live="polite"></div>
+      <div class="chips" id="chips" aria-label="Password breakdown"></div>
+      <div class="legend">
+        <span style="--c:var(--teal)">Random character</span>
+        <span style="--c:var(--red)">Dictionary word</span>
+        <span style="--c:var(--amber)">Sequence</span>
+        <span style="--c:var(--blue)">Year</span>
+        <span style="--c:var(--violet)">Repeat</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="sBits">0</b><small>bits of entropy</small></div>
+        <div class="stat"><b id="sPool">0</b><small>character pool</small></div>
+        <div class="stat"><b id="sLen">0</b><small>characters</small></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="t2">
+      <h2 id="t2">Checklist</h2>
+      <ul class="checks" id="checks"></ul>
+      <ul class="tips" id="tips"></ul>
+    </section>
+  </div>
+
+  <div>
+    <section class="panel" aria-labelledby="t3">
+      <h2 id="t3">Estimated time to crack</h2>
+      <div id="cracks"></div>
+      <p class="note">Assumes the attacker needs to try about half of all possible guesses. Patterns such as words, years, and sequences are counted as cheap guesses, so the bit count is lower than a plain length-and-symbols formula.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="t4">
+      <h2 id="t4">Generate a strong one</h2>
+      <label>Length: <b id="lenOut">18</b>
+        <input id="glen" type="range" min="10" max="40" value="18" style="width:100%"></label>
+      <div class="gen-opts">
+        <label><input type="checkbox" id="gU" checked> Uppercase</label>
+        <label><input type="checkbox" id="gD" checked> Digits</label>
+        <label><input type="checkbox" id="gS" checked> Symbols</label>
+      </div>
+      <div class="gen-out" id="gen" aria-live="polite"></div>
+      <div class="row-btn">
+        <button class="primary" id="gBtn" type="button">Generate</button>
+        <button id="cpBtn" type="button">Copy</button>
+        <button id="useBtn" type="button">Test this one</button>
+      </div>
+    </section>
+  </div>
+</div>
+<section class="panel" aria-labelledby="t5">
+  <h2 id="t5">Anonymous stats from this server</h2>
+  <div id="stats"></div>
+  <p class="note">Only a rating and a bit count are saved. Passwords are never stored.</p>
+</section>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
