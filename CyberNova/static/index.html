@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CyberNova: Encryption & Decryption Toolkit</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>CyberNova</h1>
+    <p>Compare a cipher you can break in seconds with one you can't. Same text, three methods.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="caesar" aria-selected="true">Caesar</button>
+    <button role="tab" data-tab="vigenere" aria-selected="false">Vigenère</button>
+    <button role="tab" data-tab="aes" aria-selected="false">AES-256-GCM</button>
+  </div>
+
+  <section class="bench">
+    <p class="note" id="note"></p>
+
+    <div class="row">
+      <div class="seg" role="group" aria-label="Mode">
+        <button data-mode="encrypt" aria-pressed="true">Encrypt</button>
+        <button data-mode="decrypt" aria-pressed="false">Decrypt</button>
+      </div>
+      <label data-for="caesar">Shift <input id="shift" type="number" min="0" max="25" value="3"></label>
+      <label data-for="vigenere" hidden>Key <input id="vkey" type="text" placeholder="LEMON" autocomplete="off"></label>
+      <label data-for="aes" hidden>Key derivation
+        <select id="kdf">
+          <option value="scrypt">scrypt (memory-hard)</option>
+          <option value="pbkdf2">PBKDF2-SHA256, 600k rounds</option>
+        </select>
+      </label>
+    </div>
+
+    <label data-for="aes" hidden class="full">Passphrase
+      <input id="pass" type="password" autocomplete="new-password">
+      <span class="meter"><i id="meterBar"></i></span>
+      <small id="meterText">Enter a passphrase</small>
+    </label>
+
+    <label class="full">Input
+      <textarea id="input" rows="5" placeholder="Type or paste text"></textarea>
+    </label>
+
+    <div class="row">
+      <button class="primary" id="run">Encrypt</button>
+      <button id="brute" data-for="caesar" hidden>Try all 26 shifts</button>
+      <button id="swap" title="Move output into input">Use output as input</button>
+    </div>
+
+    <p class="error" id="error" role="alert" hidden></p>
+
+    <label class="full">Output
+      <textarea id="output" rows="5" readonly></textarea>
+    </label>
+    <button id="copy">Copy output</button>
+
+    <div id="anatomy" hidden>
+      <h2>What's inside this message</h2>
+      <div class="bar" id="anatomyBar"></div>
+      <ul class="legend" id="anatomyLegend"></ul>
+    </div>
+
+    <div id="brutePanel" hidden>
+      <h2>Every possible shift</h2>
+      <p class="note">An attacker needs only 26 guesses. Find the one that reads as language.</p>
+      <ol id="bruteList"></ol>
+    </div>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
